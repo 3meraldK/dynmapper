@@ -7,5 +7,5 @@ In command prompt, run:
 - Example: dynmapper.py aurora meganation 4 ((-2048,-1132),(4516,2964))
 > Don't put spaces in last argument.
 
-## Example
+## Generated example
 ![meganation-aurora](https://user-images.githubusercontent.com/48335651/224452178-dd3f6f07-2131-457b-933f-439cf373d08e.png)
