@@ -3,6 +3,7 @@ Overlay towns from Minecraft Dynmap onto an image
 
 ## Requirements
 - Python (tested on 3.11)
+- Libraries for Python (install with pip): requests, sys, PIL
 - Libraries from pip: requests, sys, PIL
 
 ## Usage
