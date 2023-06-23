@@ -7,13 +7,13 @@ from PIL import Image, ImageDraw
 
 world =  sys.argv[1]
 mode = sys.argv[2]
-scale = int(sys.argv[3])
+scale = float(sys.argv[3])
 corners = eval(sys.argv[4])
 marker_URL = 'https://earthmc.net/map/' + world + '/standalone/MySQL_markers.php?marker=_markers_/marker_earth.json'
 alliances_api_URL = 'https://emctoolkit.vercel.app/api/' + world + '/alliances'
 
-if scale = 0:
-	print("Scale must not be zero, exiting..")
+if scale <= 0:
+	print("Scale must be a positive number, exiting..")
 	exit()
 
 def hex_to_rgba(hex_str, alpha):
