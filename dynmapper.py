@@ -12,6 +12,10 @@ corners = eval(sys.argv[4])
 marker_URL = 'https://earthmc.net/map/' + world + '/standalone/MySQL_markers.php?marker=_markers_/marker_earth.json'
 alliances_api_URL = 'https://emctoolkit.vercel.app/api/' + world + '/alliances'
 
+if scale = 0:
+	print("Scale must not be zero, exiting..")
+	exit()
+
 def hex_to_rgba(hex_str, alpha):
 	r, g, b = (int(hex_str[i:i+2], 16) for i in range(1, 7, 2))
 	return (r, g, b, alpha)
