@@ -1,18 +1,21 @@
 # dynmapper
-Overlay towns from Minecraft Dynmap onto an image
+Overlay towns from Minecraft Dynmap onto an image.
+Supports EarthMC, because it's the only Towny server I know of.
 
 ## Requirements
-- Python (tested on 3.11)
-- Libraries for Python (install with pip): requests, sys, PIL
+- Python
+- Python libraries (install with pip): requests, sys, PIL
+
+Tested on Windows 10 x64, Python 3.11.2
 
 ## Usage
-1. Ensure you meet requirements presented above.
-2. Download [the latest release](https://github.com/3meraldK/dynmapper/releases/latest).
-3. Open command prompt/terminal in a folder with the script.
-4. In command prompt, run: 
-- `dynmapper.py [aurora/nova] [default/meganation/alliance] [x blocks per pixel] [(top-left corner XZ coords),(bottom-right corner XZ coords)]`
-- ✅ Good example: dynmapper.py aurora meganation 4 ((-2048,-1132),(4516,2964))
-- ⚠️ Wrong example: dynmapper.py aurora Russian_Empire 1 ((-1024, -1337), (2999, 3111))
+Run this script from desired terminal. It should look like this:
+<pre>python dynmapper.py [aurora/nova] [default/meganation/alliance] [x blocks per pixel] [(top-left corner XZ coords),(bottom-right corner XZ coords)]</pre>
+- ✅ Good example: python dynmapper.py aurora meganation 4 ((-2048,-1132),(4516,2964))
+- ⚠️ Wrong example: python dynmapper.py aurora Russian_Empire 1 ((-1024, -1337), (2999, 3111))
+
+Scale can be any positive number, for example `2.5`. The order of the corners must remain and must be exact, e.g. `((top-left),(bottom-right))` is the only allowed parameter form.
 
 ## Generated example
-![meganation-aurora](https://user-images.githubusercontent.com/48335651/224452178-dd3f6f07-2131-457b-933f-439cf373d08e.png)
+![image](https://github.com/3meraldK/dynmapper/assets/48335651/e54a4191-b103-4ebb-9925-c5dc118269fa)
+
