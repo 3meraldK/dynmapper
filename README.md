@@ -4,7 +4,7 @@ Supports EarthMC, because it's the only Towny server I know of.
 
 ## Requirements
 - Python
-- Python libraries (install with pip): requests, sys, PIL
+- Python libraries (install with pip): requests, sys, PIL, time
 
 Tested on Windows 10 x64, Python 3.11.2
 
