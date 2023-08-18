@@ -10,7 +10,7 @@ Tested on Windows 10 x64, Python 3.11.2
 
 ## Usage
 Run this script from desired terminal. It should look like this:
-<pre>python dynmapper.py [aurora/nova] [default/meganation/alliance] [x blocks per pixel] [(top-left corner XZ coords),(bottom-right corner XZ coords)]</pre>
+<pre>python dynmapper.py [aurora/nova] [default/meganation/alliance] [x blocks per pixel] ((top-left corner XZ coords),(bottom-right corner XZ coords))</pre>
 - ✅ Good example: python dynmapper.py aurora meganation 4 ((-2048,-1132),(4516,2964))
 - ⚠️ Wrong example: python dynmapper.py aurora Russian_Empire 1 ((-1024, -1337), (2999, 3111))
 
