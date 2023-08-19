@@ -3,6 +3,7 @@
 import requests
 import sys
 import time
+import re
 from PIL import Image, ImageDraw
 
 def hex_to_rgba(hex_str, alpha):
@@ -62,9 +63,12 @@ if response.status_code != requests.codes.ok:
 data = response.json()
 areas = data['sets']['townyPlugin.markerset']['areas']
 towns = []
+# Regex pattern to extract nations
+nationPattern = r'>(.*?)<'
 
 for area in areas:
 	fill = areas[area]['fillcolor']
+	# Don't draw shop areas
 	if fill == '#00FF00':
 		continue
 
@@ -73,6 +77,7 @@ for area in areas:
 	z = areas[area]['z']
 	town = areas[area]['label']
 
+	# Calculate width and height for image
 	if corners != ((0, 0), (0, 0)):
 		height = round(abs(corners[0][1] - corners[1][1]) / scale)
 		coords = [(round((x[i] - corners[0][0]) / scale), round((z[i] - corners[0][1]) / scale)) for i in range(len(x))]
@@ -83,19 +88,20 @@ for area in areas:
 		desc = areas[area]['desc']
 		desc = desc.replace(' (Shop)', '')
 
+		# If town isn't in nation
 		if '()</span><br /> Mayor' in desc:
 			fill = outline = '#000000'
 		else:
 
-			if 'nofollow\'>' in desc:
-				start = desc.find('nofollow\'>')
-				end = desc.find('</a>')
-				nation = desc[start:end]
-				nation = nation.replace('nofollow\'>', '')
-			else:
-				start = desc.find(f'{town} (') + len(f'{town} (')
-				end = desc.find(')</span><br /> Mayor')
-				nation = desc[start:end]
+			# Extract nation from town's description
+			start_idx = desc.find('(')
+			end_idx = desc.find(')')
+			if start_idx != -1 and end_idx != -1:
+				nation = desc[start_idx + 1:end_idx]
+
+			# If nation still contains </a>
+			if '</a>' in nation:
+				nation = re.search(nationPattern, nation).group(1)
 
 			if mode == 'alliance':
 				fill = outline = '#000000'
