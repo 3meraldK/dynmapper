@@ -16,6 +16,6 @@ Run this script from desired terminal. It should look like this:
 
 Scale (x blocks per pixel) can be any positive number, for example `2.5`. The order of the corners must remain and must be exact, e.g. `((top-left),(bottom-right))` is the only allowed parameter form.
 
-## Generated example
+## Another generated example
 ![image](https://github.com/3meraldK/dynmapper/assets/48335651/e54a4191-b103-4ebb-9925-c5dc118269fa)
 
