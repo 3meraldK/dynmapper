@@ -1,7 +1,5 @@
 # dynmapper
-Python script to overlay towns from Minecraft Dynmap onto an image.
-Supports EarthMC, because it's the only **serious** Towny server I know of.
-Can be adapted to your needs or servers if you know Python.
+Python script to overlay towns from Minecraft Dynmap onto an image. Supports EarthMC, because it's the only **serious** Towny server I know of. Can be adapted to your needs or servers if you know Python.
 
 ## Requirements
 - Python
@@ -15,7 +13,7 @@ Run this script from desired terminal. It should look like this:
 - ✅ Good example: python dynmapper.py aurora meganation 4 ((-2048,-1132),(4516,2964))
 - ⚠️ Wrong example: python dynmapper.py aurora Russian_Empire 1 ((-1024, -1337), (2999, 3111))
 
-Scale (x blocks per pixel) can be any positive number, for example `2.5`. The order of the corners must remain and must be exact, e.g. `((top-left),(bottom-right))` is the only allowed parameter form. Optionally, corners may be "((0,0),(0,0))", which will generate whole world town map.
+Scale (x blocks per pixel) can be any positive number, for example `2.5`. For the corners parameter, only this form: `((top-left),(bottom-right))` is allowed. That means, `((bottom-left),(top-right))` etc. are disallowed. Optionally, corners may be `((0,0),(0,0))`, which will generate whole world town map.
 
 ## Another generated example
 ![image](https://github.com/3meraldK/dynmapper/assets/48335651/e54a4191-b103-4ebb-9925-c5dc118269fa)
