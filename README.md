@@ -1,6 +1,7 @@
 # dynmapper
 Python script to overlay towns from Minecraft Dynmap onto an image.
 Supports EarthMC, because it's the only **serious** Towny server I know of.
+Can be adapted to your needs or servers if you know Python.
 
 ## Requirements
 - Python
