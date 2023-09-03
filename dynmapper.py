@@ -13,7 +13,9 @@ def hex_to_rgba(hex_str, alpha):
 world =  sys.argv[1]
 mode = sys.argv[2]
 scale = float(sys.argv[3])
-corners = eval(sys.argv[4])
+corners = None
+if len(sys.argv) > 4:
+    corners = eval(sys.argv[4])
 marker_URL = f'https://earthmc.net/map/{world}/standalone/MySQL_markers.php?marker=_markers_/marker_earth.json'
 alliances_api_URL = f'https://emctoolkit.vercel.app/api/{world}/alliances'
 
@@ -27,7 +29,7 @@ if mode not in ['default', 'meganation', 'alliance']:
 	print('Wrong mode, exiting..')
 	exit()
 
-print(f'Fetching {mode}s from world {world} at scale 1:{scale:g}')
+print(f'Fetching {mode}s from world {world} at scale 1:{scale}')
 
 if mode != 'default':
 
@@ -78,7 +80,7 @@ for area in areas:
 	town = areas[area]['label']
 
 	# Calculate width and height for image
-	if corners != ((0, 0), (0, 0)):
+	if corners:
 		height = round(abs(corners[0][1] - corners[1][1]) / scale)
 		coords = [(round((x[i] - corners[0][0]) / scale), round((z[i] - corners[0][1]) / scale)) for i in range(len(x))]
 	else:
@@ -116,14 +118,14 @@ for area in areas:
 	town = {'fill': fill, 'outline': outline, 'coords': coords}
 	towns.append(town)
 
-if corners != ((0, 0), (0, 0)):
+if corners:
 	width = round(abs(corners[0][0] - corners[1][0]) / scale)
 	height = round(abs(corners[0][1] - corners[1][1]) / scale)
 else:
 	width = round(66360 / scale)
 	height = round(33148 / scale)
 
-print(f'Creating image of {str(width)} x {str(height)} px in current directory..')
+print(f'Creating image of {width} x {height} px in current directory..')
 
 image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
 draw = ImageDraw.Draw(image)
