@@ -29,7 +29,7 @@ if mode not in ['default', 'meganation', 'alliance']:
 	print('Wrong mode, exiting..')
 	exit()
 
-print(f'Fetching {mode}s from world {world} at scale 1:{scale}')
+print(f'Fetching {mode}s from world {world} at scale 1:{scale:g}')
 
 if mode != 'default':
 
