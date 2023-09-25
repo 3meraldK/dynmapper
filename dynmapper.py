@@ -6,6 +6,8 @@ import time
 import re
 from PIL import Image, ImageDraw
 
+print('')
+
 def hex_to_rgba(hex_str, alpha):
 	r, g, b = (int(hex_str[i:i+2], 16) for i in range(1, 7, 2))
 	return (r, g, b, alpha)
@@ -71,7 +73,7 @@ nationPattern = r'>(.*?)<'
 for area in areas:
 	fill = areas[area]['fillcolor']
 	# Don't draw shop areas
-	if fill == '#00FF00':
+	if ' (Shop) (' in areas[area]['desc']:
 		continue
 
 	outline = areas[area]['color']
