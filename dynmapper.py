@@ -88,8 +88,8 @@ for marker in data[0]['markers']:
 	fill = marker.get('fillColor')
 	outline = marker.get('color')
 
-	if fill == None or nation == None: fill = '#000000'
-	if outline == None or nation == None: outline = '#000000'
+	if outline == None: outline = fill
+	if nation == None: fill = outline = '#000000'
 
 	if mode != 'default' and nation != None:
 		nation = nation.group(1)
