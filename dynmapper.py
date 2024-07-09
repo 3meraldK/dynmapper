@@ -98,7 +98,7 @@ for marker in data[0]['markers']:
 		if mode == 'meganation':
 			if fill == '#3FB4FF': fill = outline = '#000000'
 
-		for alliance in arr:
+		for alliance in alliances:
 			if nation not in alliance[2]: continue
 			fill = alliance[0]
 			outline = alliance[1]
