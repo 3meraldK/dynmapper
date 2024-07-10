@@ -13,49 +13,52 @@ def hex_to_rgba(hex_string, alpha):
 def round_to_16(number):
 	return round(number / 16) * 16
 
-def quit(reason):
-	print(reason)
-	exit()
+def clamp(number, min_value, max_value):
+	return max(min(number, max_value), min_value)
 
 print('')
+print('Dynmapper by 3meraldK')
+
+if len(sys.argv) < 3:
+	exit('Usage: python dynmapper.py [default/meganation/alliance] [blocks per pixel] (corner coordinates)\n')
 
 markers_URL = 'https://map.earthmc.net/tiles/minecraft_overworld/markers.json'
 alliances_api_URL = 'https://emctoolkit.vercel.app/api/aurora/alliances'
 mode = sys.argv[1]
 scale = float(sys.argv[2])
-corners = None
+# World boundaries. Default option
+corners = [-33280, -16640, 33080, 16508]
 
 # Parse corners
 if len(sys.argv) > 3:
 	if len(sys.argv) < 7:
-		quit('Usage: python dynmapper.py [default/meganation/alliance] [blocks per pixel] (corner coordinates)')
+		exit('Usage: python dynmapper.py [default/meganation/alliance] [blocks per pixel] (corner coordinates)\n')
 
 	# Parse corner coordinates
-	coords = sys.argv[3:7]
-	for i, coord in enumerate(coords):
+	corners = sys.argv[3:7]
+	for i, corner in enumerate(corners):
+		isX = i == 0 or i == 2
 		try:
 			# Clamping x and z coordinates
-			if i == 0 or i == 2: coords[i] = max(min(int(coord), 33080), -33280)
-			else: coords[i] = max(min(int(coord), 16508), -16640)
+			if isX: corners[i] = clamp(int(corner), -33280, 33080)
+			else: corners[i] = clamp(int(corner), -16640, 16508)
 		except ValueError:
-			quit('Corners were not put in correct format, exiting..')
-
-	corners = ((coords[0], coords[1]), (coords[2], coords[3]))
+			exit('Corners were not put in correct format, exiting..\n')
 
 # Parse other unintended inputs
 if scale <= 0:
-	quit('Scale must be a positive number, exiting..')
+	exit('Scale must be a positive number, exiting..\n')
 if mode not in ['default', 'meganation', 'alliance']:
-	quit('Wrong mode, exiting..')
+	exit('Wrong mode, exiting..\n')
 
-print(f'Fetching {mode}s at scale 1:{scale:g}')
+print(f'Creating {mode} map at scale 1:{scale:g}..')
 
 if mode != 'default':
-	print(f'Fetching alliances from {alliances_api_URL}..')
+	print(f'Fetching alliances from ({alliances_api_URL})..')
 
 	response = requests.get(alliances_api_URL)
 	if response.status_code != requests.codes.ok:
-		quit('The response status is not OK. Try later, exiting..')
+		exit('The response status is not OK. Try later, exiting..\n')
 
 	codes = { 'alliance': 'normal', 'meganation': 'mega' }
 
@@ -68,14 +71,14 @@ if mode != 'default':
 		fill = alliance.get('colours', {}).get('fill', '#000000')
 		outline = alliance.get('colours', {}).get('outline', '#000000')
 		nations = alliance.get('nations', [])
-		alliance_data = [fill, outline, nations]
+		alliance_data = {'fill': fill, 'outline': outline, 'nations': nations}
 		alliances.append(alliance_data)
 
-print(f'Fetching markers.json from {markers_URL}..')
+print(f'Fetching markers.json from ({markers_URL})..')
 
 response = requests.get(markers_URL)
 if response.status_code != requests.codes.ok:
-	quit('The response status is not OK. Try later, exiting..')
+	exit('The response status is not OK. Try later, exiting..\n')
 
 data = response.json()
 regions = []
@@ -99,9 +102,9 @@ for marker in data[0]['markers']:
 			if fill == '#3FB4FF': fill = outline = '#000000'
 
 		for alliance in alliances:
-			if nation not in alliance[2]: continue
-			fill = alliance[0]
-			outline = alliance[1]
+			if nation not in alliance['nations']: continue
+			fill = alliance['fill']
+			outline = alliance['outline']
 
 	for region in marker['points']:
 		x = []
@@ -111,36 +114,31 @@ for marker in data[0]['markers']:
 			z.append(round_to_16(vertex['z']))
 
 		# Calculate town coordinates
-		if corners:
-			# Extract min and max coordinates to handle any order of provided corners
-			min_x = min(corners[0][0], corners[1][0])
-			max_x = max(corners[0][0], corners[1][0])
-			min_z = min(corners[0][1], corners[1][1])
-			max_z = max(corners[0][1], corners[1][1])
-			coords = [(round((x[i] - min_x) / scale), round((z[i] - min_z) / scale)) for i in range(len(x))]
-		else:
-			coords = [(round((x[i] + 33280) / scale), round((z[i] + 16640) / scale)) for i in range(len(x))]
+		# Extract min coordinates to handle any order of provided corners
+		min_x = min(corners[0], corners[2])
+		min_z = min(corners[1], corners[3])
+		coords = [(round((x[i] - min_x) / scale), round((z[i] - min_z) / scale)) for i in range(len(x))]
 
 		region = {'fill': fill, 'outline': outline, 'coords': coords}
 		regions.append(region)
 
 # Calculate image size
-if corners:
-	width = round(abs(corners[0][0] - corners[1][0]) / scale)
-	height = round(abs(corners[0][1] - corners[1][1]) / scale)
-else:
-	width = round(66360 / scale)
-	height = round(33148 / scale)
+width = round(abs(corners[0] - corners[2]) / scale)
+height = round(abs(corners[1] - corners[3]) / scale)
 
 if width <= 0 or height <= 0:
-    quit('Width or height of image is not positive, exiting..')
+	exit('Width or height of image is not positive, exiting..\n')
 
-print(f'Creating image of {width} x {height} px in current directory..')
-
-image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+print(f'Saving image of {width} x {height} px in current directory..')
+save_start = time.time()
+image = Image.new(mode='RGBA', size=(width, height))
 draw = ImageDraw.Draw(image)
-[ draw.polygon(region['coords'], hex_to_rgba(region['fill'], 51), hex_to_rgba(region['outline'], 255)) for region in regions ]
-
-file_name = f'{mode}-{int(time.time())}.png'
+for region in regions:
+	fill = hex_to_rgba(region['fill'], 51)
+	outline = hex_to_rgba(region['outline'], 255)
+	draw.polygon(region['coords'], fill, outline)
+now = int(time.time())
+file_name = f'{mode}-{now}.png'
 image.save(file_name)
-print(f'Saved image as {file_name}, exiting..')
+save_stop = time.time()
+print(f'Saved image as {file_name} in {round(save_stop - save_start, 2)}s\n')
