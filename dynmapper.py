@@ -7,7 +7,8 @@ import re
 from PIL import Image, ImageDraw
 
 def hex_to_rgba(hex_string, alpha):
-	r, g, b = (int(hex_string[i:i+2], 16) for i in range(1, 7, 2))
+	try: r, g, b = (int(hex_string[i:i+2], 16) for i in range(1, 7, 2))
+	except: r, g, b = 255, 255, 255
 	return (r, g, b, alpha)
 
 def round_to_16(number):
@@ -141,4 +142,5 @@ now = int(time.time())
 file_name = f'{mode}-{now}.png'
 image.save(file_name)
 save_stop = time.time()
+
 print(f'Saved image as {file_name} in {round(save_stop - save_start, 2)}s\n')
