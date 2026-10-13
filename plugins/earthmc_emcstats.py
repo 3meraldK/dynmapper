@@ -9,6 +9,9 @@ from munch import Munch
 apiURL = 'https://emcstats.bot.nu/nostra/alliances'
 print('EarthMC Stats plugin by 3meraldK')
 
+# Imported indirectly from the main script
+towns = towns
+
 alliance_type = sys.argv[1] if len(sys.argv) > 1 else None
 if alliance_type not in ['mega', 'pact']:
     raise Exception('Wrong alliance type (mega, pact)')
@@ -39,3 +42,5 @@ for town in towns:
     if not getattr(alliance.optional, 'colours', None): continue
     town.fillColor = '#' + alliance.optional.colours.fill
     town.color = '#' + alliance.optional.colours.outline
+
+# Indirectly returns modified towns variable
