@@ -25,7 +25,7 @@ Python script to generate the Squaremap's (not Dynmap, etc.) .png image of the T
 - ✅ Good example (test it out!): `python dynmapper.py https://map.earthmc.net minecraft_overworld 1 -2280 -13344 7720 -6408`
 - ⛔ Wrong example: `python dynmapper.py map.earthmc.net earth -4.4 (-1000, -2000) (1000, 4000)`
 ### Plugins. Optional arguments
-There is one plugin in `plugins/earthmc_emcstats.py` for a specific Minecraft server to color towns according to which alliance they belong to. This is a proof of concept for plugins in this script.
+There is one plugin in `plugins/earthmc_emcstats.py` for a specific Minecraft server to color towns according to which alliance they belong to. This is a proof of concept for plugins in this script. Plugins work simply: they have `towns` variable already defined and they're intended to return it modified.
 - `<plugin>` - full relative path of a downloaded plugin to modify town markers.
 - `<plugin arguments>` - arguments to the plugin if needed.
 
