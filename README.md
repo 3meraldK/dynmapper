@@ -1,5 +1,5 @@
 # dynmapper
-Python script to generate the Squaremap's .png image of the Towny layer, with [the uv](https://github.com/astral-sh/uv) support. Tested on Windows 11 with Python 3.13.13 on EarthMC Minecraft server.
+Python script to generate the Squaremap's (not Dynmap, etc.) .png image of the Towny layer, with [the uv](https://github.com/astral-sh/uv) support. Tested on Windows 11 with Python 3.13.13 on EarthMC Minecraft server.
 
 ## Installation
 
