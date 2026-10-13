@@ -11,8 +11,11 @@ import sys
 import re
 import requests
 import time
+import runpy
 from PIL import Image, ImageDraw
 from munch import Munch
+
+default_color = '#89c500'
 
 # Utility functions
 def hex_to_rgba(hex_string, alpha):
@@ -27,8 +30,9 @@ print('')
 print('Dynmapper by 3meraldK')
 
 # Validating parameters
-if len(sys.argv) != 8:
-	exit('Usage (read repository\'s readme): python dynmapper.py [map url] [world name] [scale] [corner coordinates]\n')
+if len(sys.argv) < 8:
+	exit('Usage (read repository\'s readme): python dynmapper.py [map url]' +
+		'[world name] [scale] [corner coordinates] <plugin> <plugin arguments>\n')
 
 link = ''.join(re.split('(/)', sys.argv[1])[0:5])
 if link.startswith('https://') == False:
@@ -52,6 +56,9 @@ height = round(abs(corners[1] - corners[3]) / scale)
 if scale <= 0 or width <= 0 or height <= 0:
 	exit('Scale, width, and height must be positive numbers, exiting..\n')
 
+plugin_script = sys.argv[8] if len(sys.argv) > 8 else None
+plugin_args = [plugin_script] + sys.argv[9:] if plugin_script else []
+
 # Downloading & processing the town layer
 response = requests.get(f'{link}/tiles/{world}/markers.json')
 
@@ -67,6 +74,15 @@ except IndexError:
 
 towns = list(filter(lambda marker: marker.type == 'polygon', markers))
 
+if plugin_script:
+	try:
+		sys.argv = plugin_args
+		shared_var = {'towns': towns}
+		runpy.run_path(plugin_script, init_globals=shared_var)
+		towns = shared_var.get('towns', towns)
+	except Exception as e:
+		exit(f'Unexpected error during execution of the plugin: {e}, exiting..\n')
+
 # Drawing the final image
 try:
 	image = Image.new(mode='RGBA', size=(width, height))
@@ -75,8 +91,8 @@ except MemoryError:
 draw = ImageDraw.Draw(image)
 
 for town in towns:
-	fill = hex_to_rgba(town.fillColor if getattr(town, 'fillColor', None) else '#89c500', 51)
-	outline = hex_to_rgba(town.color if getattr(town, 'color', None) else '#89c500', 255)
+	fill = hex_to_rgba(town.fillColor if getattr(town, 'fillColor', None) else default_color, 51)
+	outline = hex_to_rgba(town.color if getattr(town, 'color', None) else default_color, 255)
 	for polygon in town.points:
 		try:
 			coords = []

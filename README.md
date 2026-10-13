@@ -24,6 +24,10 @@ Python script to generate the Squaremap's .png image of the Towny layer, with [t
 - `[corner coordinates]` - series of whole numbers in format "x1 z1 x2 z2" representing any diagonal corners (their in-game coordinates) of the output map.
 - ✅ Good example (test it out!): `python dynmapper.py https://map.earthmc.net minecraft_overworld 1 -2280 -13344 7720 -6408`
 - ⛔ Wrong example: `python dynmapper.py map.earthmc.net earth -4.4 (-1000, -2000) (1000, 4000)`
+### Plugins. Optional arguments
+There is one plugin in `plugins/earthmc_emcstats.py` for a specific Minecraft server to color towns according to which alliance they belong to. This is a proof of concept for plugins in this script.
+- `<plugin>` - full relative path of a downloaded plugin to modify town markers.
+- `<plugin arguments>` - arguments to the plugin if needed.
 
 ## Example output
 ![image](https://github.com/3meraldK/SquaremapImageExport/assets/48335651/2c08b50f-8d18-4a86-a75a-adcc7021a125)
