@@ -30,4 +30,5 @@ There is one plugin in `plugins/earthmc_emcstats.py` for a specific Minecraft se
 - `<plugin arguments>` - arguments to the plugin if needed.
 
 ## Example output
-![image](https://github.com/3meraldK/SquaremapImageExport/assets/48335651/2c08b50f-8d18-4a86-a75a-adcc7021a125)
+<img src="https://github.com/user-attachments/assets/48e6dae2-a3e3-4e06-bf2a-d819bc3eb5c4" />
+
