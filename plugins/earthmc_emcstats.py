@@ -14,7 +14,7 @@ towns = towns
 
 alliance_type = sys.argv[1] if len(sys.argv) > 1 else None
 if alliance_type not in ['mega', 'pact']:
-    raise Exception('Wrong alliance type (mega, pact)')
+    raise Exception('Provide parameter for alliance type (mega, pact)')
 if alliance_type == 'mega': alliance_type = r'mega'
 else: alliance_type = r'pact|org'
 
