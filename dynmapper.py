@@ -2,10 +2,10 @@
 # dependencies = [
 #    "requests",
 #    "Pillow",
-#    "munch"
+#    "munch",
+#    "aiohttp"
 # ]
 # ///
-# astral-sh/uv support above
 
 import sys
 import re
@@ -14,10 +14,35 @@ import time
 import runpy
 from PIL import Image, ImageDraw
 from munch import Munch
+from aiohttp import ClientSession, ClientTimeout
+import asyncio
 
-default_color = '#89c500'
+async def get_world():
+	global world, link
+	async with ClientSession() as session:
+		try:
+			async with session.get(f'{link}/tiles/settings.json', timeout=ClientTimeout(total=3)) as response:
+				if response.status != 200:
+					exit('The map website isn\'t responding (try later), exiting..\n')
+				settings = await response.json()
+				settings = Munch.fromDict(settings)
+				print('\nAvailable worlds:')
+				options = []
+				worlds = []
+				for i, _world in enumerate(settings.worlds):
+					options.append(f'  {i+1}. {_world.name}')
+					worlds.append(_world.name)
+				print('\n'.join(options))
+		except:
+			exit('Response or website URL is invalid, exiting..\n')
 
-# Utility functions
+		try:
+			world = int(input('Enter your choice (number): '))
+			if world < 1: raise Exception
+			world = worlds[world-1]
+		except:
+			exit('Input should be one of possible choices, exiting..\n')
+
 def hex_to_rgba(hex_string, alpha):
 	try: r, g, b = (int(hex_string[i:i+2], 16) for i in range(1, 7, 2))
 	except: r, g, b = 255, 255, 255
@@ -29,70 +54,78 @@ def round_to_16(number):
 print('')
 print('Dynmapper by 3meraldK')
 
-# Validating parameters
-if len(sys.argv) < 8:
-	exit('Usage (read repository\'s readme): python dynmapper.py [map url]' +
-		'[world name] [scale] [corner coordinates] <plugin> <plugin arguments>\n')
-
-link = ''.join(re.split('(/)', sys.argv[1])[0:5])
+link = input('Enter the map URL: ')
+link = ''.join(re.split('(/)', link)[0:5])
 if link.startswith('https://') == False:
-	exit('The [map url] is invalid, it should start with https://, exiting..\n')
+	exit('The map URL should start with https://, exiting..\n')
 
-world = sys.argv[2]
+asyncio.run(get_world())
 
+print(f'\nHow many blocks should be 1 pixel on image?')
 try:
-	scale = float(sys.argv[3])
-	corners = sys.argv[4:8]
-	for i, corner in enumerate(corners):
-		corners[i] = int(corner)
-except ValueError:
-	exit('Command parameters [corner coordinates] or [scale] should be whole numbers, exiting..\n')
+	scale = int(input('Enter your choice: '))
+	if scale <= 0: raise Exception
+except:
+	exit('Input should be a positive number, exiting..\n')
+
+print('')
+corners = []
+try:
+	for (i, x) in [(1, 'x'), (1, 'z'), (2, 'x'), (2, 'z')]:
+		corners.append(int(input(f'Enter corner {i} {x}-coordinate: ')))
+except:
+	exit('Corner coordinates should be whole numbers, exiting..\n')
 
 min_x = min(corners[0], corners[2])
 min_z = min(corners[1], corners[3])
 width = round(abs(corners[0] - corners[2]) / scale)
 height = round(abs(corners[1] - corners[3]) / scale)
 
-if scale <= 0 or width <= 0 or height <= 0:
+if width <= 0 or height <= 0:
 	exit('Scale, width, and height must be positive numbers, exiting..\n')
 
-plugin_script = sys.argv[8] if len(sys.argv) > 8 else None
-plugin_args = [plugin_script] + sys.argv[9:] if plugin_script else []
+print('')
+print('If you want to use a plugin, enter the script\'s full name, for example script.py.')
 
-# Downloading & processing the town layer
+choice = input('Otherwise enter "n". Enter your choice: ')
+plugin_script = None if choice.lower() == 'n' else choice
+if plugin_script:
+	print('Enter script parameters separated by space or leave blank.')
+	plugin_args = input('Enter your choice: ').split(' ')
+
 response = requests.get(f'{link}/tiles/{world}/markers.json')
 
 if response.status_code != requests.codes.ok:
-	exit('The response status is not OK. Try later, exiting..\n')
+	exit('The map website isn\'t responding (try later), exiting..\n')
 
 data = Munch.fromDict(response.json())
 
 try:
 	markers = list(filter(lambda layer: layer.id == 'towny', data))[0].markers
-except IndexError:
-	exit('This world doesn\'t have id:towny layer, exiting..\n')
+except:
+	exit('This world doesn\'t have Towny layer, exiting..\n')
 
 towns = list(filter(lambda marker: marker.type == 'polygon', markers))
 
 if plugin_script:
 	try:
-		sys.argv = plugin_args
+		sys.argv = [plugin_script] + plugin_args
 		shared_var = {'towns': towns}
 		runpy.run_path(plugin_script, init_globals=shared_var)
 		towns = shared_var.get('towns', towns)
 	except Exception as e:
 		exit(f'Unexpected error during execution of the plugin: {e}, exiting..\n')
 
-# Drawing the final image
 try:
 	image = Image.new(mode='RGBA', size=(width, height))
-except MemoryError:
+except:
 	exit('Can\'t handle such big image, exiting..\n')
+
 draw = ImageDraw.Draw(image)
 
 for town in towns:
-	fill = hex_to_rgba(town.fillColor if getattr(town, 'fillColor', None) else default_color, 51)
-	outline = hex_to_rgba(town.color if getattr(town, 'color', None) else default_color, 255)
+	fill = hex_to_rgba(town.fillColor if getattr(town, 'fillColor', None) else '#89c500', 51)
+	outline = hex_to_rgba(town.color if getattr(town, 'color', None) else '#89c500', 255)
 	for polygon in town.points:
 		try:
 			coords = []
@@ -105,10 +138,13 @@ for town in towns:
 		except:
 			pass
 
+now = int(time.time())
+file_name = f'dynmapper-{now}.png'
+
 try:
-	now = int(time.time())
-	file_name = f'dynmapper-{now}.png'
 	image.save(file_name)
-	print(f'Saved image as {file_name}, exiting..\n')
-except PermissionError:
-	exit('Insufficient permissions to save the image, exiting..\n')
+except:
+	exit('Could not save the image, exiting..\n')
+
+print('')
+print(f'Saved image as {file_name}, exiting..\n')
