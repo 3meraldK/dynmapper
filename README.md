@@ -1,5 +1,5 @@
 # dynmapper
-Python script to generate the Squaremap's (not Dynmap, etc.) .png image of the Towny layer, with [the uv](https://github.com/astral-sh/uv) support. Tested on Windows 11 with Python 3.13.13 on EarthMC Minecraft server.
+Python script to generate the Squaremap's (not Dynmap) image of the Towny layer, with [astral-sh/uv](https://github.com/astral-sh/uv) support. Tested on Windows 11 with Python 3.13.13 on EarthMC Minecraft server.
 
 ## Installation
 
@@ -8,26 +8,22 @@ Python script to generate the Squaremap's (not Dynmap, etc.) .png image of the T
 2. Open a terminal of choice (e.g. the Command Prompt) and navigate to the directory.
 
 ### 2.a. Classic way
-1. Download Python, 3.13.13 is preferred, but older versions likely work too.
+1. Download Python, preferably 3.13.13 or newer.
 2. Download [`requirements.txt`](https://raw.githubusercontent.com/3meraldK/dynmapper/main/requirements.txt) to the same directory.
 3. In the terminal you opened before, run `pip install -r requirements.txt` to download required dependencies.
-4. Run `python dynmapper.py [map url] [world name] [scale] [corner coordinates]`.
+4. Run `python dynmapper.py`.
 
 ### 2.b. astral.sh/uv
-1. Follow [official docs](https://docs.astral.sh/uv/#installation) to install uv and Python.
-2. In the terminal you opened before, run `uv run dynmapper.py [map url] [world name] [scale] [corner coordinates]`.
+1. Install [astral-sh/uv](https://docs.astral.sh/uv/#installation) with Python, preferably 3.13.13 or newer.
+2. In the terminal you opened before, run `uv run dynmapper.py`.
 
-## Usage
-- `[map url]` - URL to the map
-- `[world name]` - name of the world you want to get the map of. To get it, click the small link button in bottom-left corner on a website. The page should refresh and the updated URL should include the world's name in it, for example: `?world=world_name`.
-- `[scale]` - how many blocks should be 1 pixel. This can be any positive number, decimal or whole.
-- `[corner coordinates]` - series of whole numbers in format "x1 z1 x2 z2" representing any diagonal corners (their in-game coordinates) of the output map.
-- ✅ Good example (test it out!): `python dynmapper.py https://map.earthmc.net minecraft_overworld 1 -2280 -13344 7720 -6408`
-- ⛔ Wrong example: `python dynmapper.py map.earthmc.net earth -4.4 (-1000, -2000) (1000, 4000)`
-### Plugins. Optional arguments
-There is one plugin in `plugins/earthmc_emcstats.py` for a specific Minecraft server to color towns according to which alliance they belong to. This is a proof of concept for plugins in this script. Plugins work simply: they have `towns` variable already defined and they're intended to return it modified.
-- `<plugin>` - full relative path of a downloaded plugin to modify town markers.
-- `<plugin arguments>` - arguments to the plugin if needed.
+## Program
+
+### 1. What to expect
+It will run a wizard where you input a map URL, scale and map bounds.
+
+### 2. About plugins
+Wizard will ask you if you want to use plugins. They are small scripts designed for modifying the output image. There is one plugin in `plugins/earthmc_emcstats.py` for a specific Minecraft server to color towns according to which alliance they belong to. This is a proof of concept for plugins in this script. Plugins work simply: they have `towns` variable already defined and they're intended to modify it.
 
 ## Example output
 <img src="https://github.com/user-attachments/assets/48e6dae2-a3e3-4e06-bf2a-d819bc3eb5c4" />
